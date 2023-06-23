@@ -183,7 +183,7 @@ if (LLAMA_BLAS)
                 pkg_check_modules(DepBLAS REQUIRED flexiblas_api)
             elseif (${LLAMA_BLAS_VENDOR} MATCHES "Intel")
                 # all Intel* libraries share the same include path
-                pkg_check_modules(DepBLAS REQUIRED mkl)
+                #pkg_check_modules(DepBLAS REQUIRED mkl-sdl)
             elseif (${LLAMA_BLAS_VENDOR} MATCHES "NVHPC")
                 # this doesn't provide pkg-config
                 # suggest to assign BLAS_INCLUDE_DIRS on your own
