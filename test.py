@@ -2,13 +2,13 @@ import requests
 import json
 from time import time
 t1 = time()
-prompt = '一个自然数（0除外）， _ _的个数是有限的， _ _的个数是无限的．'
+prompt = '在电能输送的过程中，如果输送的电功率一定，将输电电压升到原来的10倍，则输电线上损失的功率将变为原来的 __ 倍，由此可见，若想有效的减小电能在输电线路上的损失应采用 __ （选填“高压”或“低压”）输电．'
 partial_knowledge = ''
 n_predict = 32
 while True:
     resp = requests.post('http://localhost:8080/completion', data = json.dumps({
         'prompt' : f'{prompt}\n知识点:\n{partial_knowledge}',
-        'subject' : '数学',
+        'subject' : '物理',
         'n_predict' : n_predict,
         'stop' : ['END'],
     }, ensure_ascii=False).encode('utf-8'))
