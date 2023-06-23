@@ -856,10 +856,16 @@ int main(int argc, char ** argv) {
                 printf("generated_text %s\n", llama.generated_text.c_str());
                 std::string generated_text = llama.generated_text;
                 if (!generated_text.empty() && !eparams.completion_candidates.empty()) {
+                    std::vector<std::string> matched_candidates;
                     for (const auto& candidate : eparams.completion_candidates) {
                         if (candidate.size() >= generated_text.size() && candidate.substr(0, generated_text.size()) == generated_text) {
                             printf("matched candidates %s\n", candidate.c_str());
+                            matched_candidates.push_back(candidate);
                         }
+                    }
+                    if (matched_candidates.size() == 1) {
+                        llama.generated_text = matched_candidates[0];
+                        break;
                     }
                 }
             }
@@ -868,8 +874,8 @@ int main(int argc, char ** argv) {
                 stop_pos = llama.findStoppingStrings(llama.generated_text, 0, STOP_PARTIAL);
             }
             if (stop_pos != std::string::npos) {
-                llama.generated_text.erase(llama.generated_text.begin() + stop_pos,
-                    llama.generated_text.end());
+                //llama.generated_text.erase(llama.generated_text.begin() + stop_pos,
+                //    llama.generated_text.end());
             }
 
             const json data = format_final_response(llama, llama.generated_text);
