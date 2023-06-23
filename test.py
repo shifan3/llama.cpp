@@ -5,6 +5,6 @@ resp = requests.post('http://localhost:8080/completion', data = {
     'n_predict' : 32,
     'stop' : ['END']
 })
-
+print(resp.text)
 print(json.dumps(json.loads(resp.text), indent = 4, ensure_ascii=False))
 
