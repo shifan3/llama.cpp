@@ -518,6 +518,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             }
             params.model = argv[i];
         } else if (arg == "--stop-word") {
+            printf("aa1\n");
             if (++i >= argc) {
                 invalid_param = true;
                 break;
