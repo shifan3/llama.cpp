@@ -526,6 +526,8 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             json data = json::parse(f); 
             auto arr = data["candidates"].array();
             for (auto& line : arr) {
+                string s = line;
+                printf("candidate %s\n", s.c_str());
                 eparams.completion_candidates.push_back(line);
             }
             
