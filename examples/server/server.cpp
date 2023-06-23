@@ -795,7 +795,7 @@ int main(int argc, char ** argv) {
     server_params sparams;
 
     // struct that contains llama context and inference
-    llama_server_context llama;
+    static thread_local llama_server_context llama;
     extra_params eparams;
     server_params_parse(argc, argv, sparams, params, eparams);
     auto antiprompt = params.antiprompt;
@@ -832,6 +832,12 @@ int main(int argc, char ** argv) {
     });
 
     svr.Post("/completion", [&llama, &eparams](const Request & req, Response & res) {
+        if (llama.ctx == nullptr) {
+            if (!llama.loadModel(params)) {
+                res.status = 500;
+                return res.set_content("cannot load model", "application/text")
+            }
+        }
         llama.rewind();
         llama_reset_timings(llama.ctx);
         json input_body = json::parse(req.body);
