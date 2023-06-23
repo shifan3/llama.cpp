@@ -525,7 +525,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             std::ifstream f(argv[i]);
             json data = json::parse(f); 
             auto arr = data.array();
-            for (std::string& candidate : arr) {
+            for (auto& candidate : arr) {
                 eparams.completion_candidates.push_back(candidate);
             }
             
