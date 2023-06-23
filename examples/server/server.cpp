@@ -524,7 +524,8 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             }
             std::ifstream f(argv[i]);
             json data = json::parse(f); 
-            printf("a1\n");
+            printf("load candidates from %s\n", argv[i]);
+            printf("a %d", int(data["candidates"].is_array()));
             auto arr = data["candidates"].array();
             for (auto& line : arr) {
                 std::string s = line;
