@@ -21,6 +21,7 @@ while True:
     if content.endswith("CONT"):
         partial_knowledge += content[:-4]
         if partial_knowledge.count('#') == 1:
+            knowledge = partial_knowledge
             break
         partial_knowledge += '#'
         n_predict = 32 - len(partial_knowledge)
