@@ -517,7 +517,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
                 break;
             }
             params.model = argv[i];
-        } else if (arg == "--candidates-file") {
+        } else if (arg == "--simplify-info-file") {
             if (++i >= argc) {
                 invalid_param = true;
                 break;
@@ -525,7 +525,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             std::ifstream f(argv[i]);
             json data = json::parse(f); 
             auto arr = data["candidates"].array();
-            for (auto line& : arr) {
+            for (auto& line : arr) {
                 eparams.completion_candidates.push_back(line);
             }
             
