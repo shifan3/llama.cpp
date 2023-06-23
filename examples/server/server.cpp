@@ -855,8 +855,12 @@ int main(int argc, char ** argv) {
                     
                 printf("generated_text %s\n", llama.generated_text.c_str());
                 std::string generated_text = llama.generated_text;
-                if (!generated_text.empty()) {
-                    //if (generated_text[0] == '\n')
+                if (!generated_text.empty() && !eparams.completion_candidates.empty()) {
+                    for (const auto& candidate : eparams.completion_candidates) {
+                        if (candidate.size() >= generated_text.size() && candidate.substr(0, generated_text.size()) == generated_text) {
+                            printf("matched candidates %s\n", candidate.c_str());
+                        }
+                    }
                 }
             }
 
