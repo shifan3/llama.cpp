@@ -826,7 +826,7 @@ int main(int argc, char ** argv) {
 
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
-
+                printf("token_text: %s\n", token_text.c_str());
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
             }
