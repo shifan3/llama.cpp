@@ -791,6 +791,10 @@ int main(int argc, char ** argv) {
 
     server_params_parse(argc, argv, sparams, params);
 
+    if (params.antiprompt.size() > 0) {
+        printf("bb1\n");
+    }
+
     if (params.model_alias == "unknown") {
         params.model_alias = params.model;
     }
@@ -810,6 +814,10 @@ int main(int argc, char ** argv) {
     // load the model
     if (!llama.loadModel(params)) {
         return 1;
+    }
+
+    if (params.antiprompt.size() > 0) {
+        printf("bb1\n");
     }
 
     Server svr;
