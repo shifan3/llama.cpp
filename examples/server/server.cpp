@@ -1,7 +1,6 @@
 #include "common.h"
 #include "llama.h"
 #include "build-info.h"
-#include <iostream>
 
 // single thread
 #define CPPHTTPLIB_THREAD_POOL_COUNT 1
@@ -9,7 +8,7 @@
 // crash the server in debug mode, otherwise send an http 500 error
 #define CPPHTTPLIB_NO_EXCEPTIONS 1
 #endif
-
+#include <fstream>
 #include "httplib.h"
 #include "json.hpp"
 
@@ -25,6 +24,10 @@ struct server_params {
     int32_t port = 8080;
     int32_t read_timeout = 600;
     int32_t write_timeout = 600;
+};
+
+struct extra_params {
+    std::vector<std::string> completion_candidates;
 };
 
 static size_t common_part(const std::vector<llama_token> & a, const std::vector<llama_token> & b) {
@@ -357,12 +360,10 @@ struct llama_server_context {
         size_t stop_pos = std::string::npos;
         for (const std::string & word : params.antiprompt) {
             size_t pos;
-            printf("stop word %s\n", word.c_str());
             if (type == STOP_FULL) {
                 const size_t tmp = word.size() + last_token_size;
                 const size_t from_pos = text.size() > tmp ? text.size() - tmp : 0;
                 pos = text.find(word, from_pos);
-                printf("a1\n");
             }
             else {
                 pos = find_partial_stop_string(word, text);
@@ -377,7 +378,6 @@ struct llama_server_context {
                 stop_pos = pos;
             }
         }
-        std::cout << stop_pos << std::endl;
         return stop_pos;
     }
 
@@ -484,7 +484,7 @@ static void server_print_usage(const char * argv0, const gpt_params & params,
 }
 
 static void server_params_parse(int argc, char ** argv, server_params & sparams,
-                                gpt_params & params) {
+                                gpt_params & params, extra_params & eparams) {
     gpt_params default_params;
     server_params default_sparams;
     std::string arg;
@@ -517,13 +517,18 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
                 break;
             }
             params.model = argv[i];
-        } else if (arg == "--stop-word") {
-            printf("aa1\n");
+        } else if (arg == "--completion-candidates") {
             if (++i >= argc) {
                 invalid_param = true;
                 break;
             }
-            params.antiprompt.push_back(argv[i]);
+            std::ifstream f(argv[i]);
+            json data = json::parse(f); 
+            auto arr = data.array();
+            for (std::string& candidate : arr) {
+                eparams.completion_candidates.push_back(candidate);
+            }
+            
         } else if (arg == "-a" || arg == "--alias") {
             if (++i >= argc) {
                 invalid_param = true;
@@ -788,8 +793,8 @@ int main(int argc, char ** argv) {
 
     // struct that contains llama context and inference
     llama_server_context llama;
-
-    server_params_parse(argc, argv, sparams, params);
+    extra_params eparams;
+    server_params_parse(argc, argv, sparams, params, eparams);
     auto antiprompt = params.antiprompt;
 
     if (params.model_alias == "unknown") {
