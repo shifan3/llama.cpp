@@ -525,12 +525,13 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             std::ifstream f(argv[i]);
             json data = json::parse(f); 
             printf("load candidates from %s\n", argv[i]);
-            printf("a %d", int(data["candidates"].is_array()));
+            printf("a %d %d\n", int(data["candidates"].is_array()), data["candidates"].size());
+            
             auto arr = data["candidates"].array();
-            for (auto& line : arr) {
-                std::string s = line;
+            for (auto j = 0; j < data["candidates"].size(); ++j) {
+                std::string s = data["candidates"][j];
                 printf("candidate %s\n", s.c_str());
-                eparams.completion_candidates.push_back(line);
+                eparams.completion_candidates.push_back(s);
             }
             
         } else if (arg == "-a" || arg == "--alias") {
