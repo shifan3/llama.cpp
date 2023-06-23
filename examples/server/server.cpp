@@ -861,6 +861,7 @@ int main(int argc, char ** argv) {
                 }
                 if (!generated_text.empty() && !eparams.completion_candidates.empty()) {
                     std::vector<std::string> matched_candidates;
+                    generated_text = subject + ">" + generated_text;
                     for (const auto& candidate : eparams.completion_candidates) {
                         if (candidate.size() >= generated_text.size() && candidate.substr(0, generated_text.size()) == generated_text) {
                             printf("matched candidates %s\n", candidate.c_str());
