@@ -1,6 +1,7 @@
 #include "common.h"
 #include "llama.h"
 #include "build-info.h"
+#include <iostream>
 
 // single thread
 #define CPPHTTPLIB_THREAD_POOL_COUNT 1
@@ -356,10 +357,12 @@ struct llama_server_context {
         size_t stop_pos = std::string::npos;
         for (const std::string & word : params.antiprompt) {
             size_t pos;
+            printf("stop word %s\n", word.c_str());
             if (type == STOP_FULL) {
                 const size_t tmp = word.size() + last_token_size;
                 const size_t from_pos = text.size() > tmp ? text.size() - tmp : 0;
                 pos = text.find(word, from_pos);
+                printf("a1\n");
             }
             else {
                 pos = find_partial_stop_string(word, text);
@@ -374,6 +377,7 @@ struct llama_server_context {
                 stop_pos = pos;
             }
         }
+        std::cout << stop_pos << std::endl;
         return stop_pos;
     }
 
@@ -832,6 +836,7 @@ int main(int argc, char ** argv) {
 
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
+                printf("token_text %s\n", token_text.c_str());
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
             }
