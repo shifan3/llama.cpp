@@ -22,7 +22,8 @@ while True:
         partial_knowledge += content[:-4]
         n_predict = 32 - len(partial_knowledge)
     else:
+        knowledge = partial_knowledge + content
         break
 
-
+print(knowledge)
 print(time() - t1)
