@@ -523,7 +523,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
                 break;
             }
             std::ifstream f(argv[i]);
-            f.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<char>));
+            f.imbue(std::locale(std::locale(), new std::codecvt_utf8<char>));
             std::string line;
             while (std::getline(f, line)) {
                 eparams.completion_candidates.push_back(line);
