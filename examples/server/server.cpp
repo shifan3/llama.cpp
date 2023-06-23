@@ -790,10 +790,7 @@ int main(int argc, char ** argv) {
     llama_server_context llama;
 
     server_params_parse(argc, argv, sparams, params);
-
-    if (params.antiprompt.size() > 0) {
-        printf("bb1\n");
-    }
+    auto antiprompt = params.antiprompt;
 
     if (params.model_alias == "unknown") {
         params.model_alias = params.model;
@@ -815,11 +812,8 @@ int main(int argc, char ** argv) {
     if (!llama.loadModel(params)) {
         return 1;
     }
-
-    if (params.antiprompt.size() > 0) {
-        printf("bb2\n");
-    }
-
+    
+    params.antiprompt = antiprompt;
     Server svr;
 
     svr.set_default_headers({
