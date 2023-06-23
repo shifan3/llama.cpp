@@ -854,7 +854,11 @@ int main(int argc, char ** argv) {
                     token_text.size(), STOP_FULL);
                     
                 printf("generated_text %s\n", llama.generated_text.c_str());
-                std::string generated_text = llama.generated_text;
+                std::string generated_text = llama.generated_text, sharp = "";
+                if (!generated_text.empty() && generated_text[0] == '#') {
+                    sharp = "#";
+                    generated_text.erase(generated_text.begin());
+                }
                 if (!generated_text.empty() && !eparams.completion_candidates.empty()) {
                     std::vector<std::string> matched_candidates;
                     for (const auto& candidate : eparams.completion_candidates) {
@@ -864,7 +868,7 @@ int main(int argc, char ** argv) {
                         }
                     }
                     if (matched_candidates.size() == 1) {
-                        llama.generated_text = matched_candidates[0];
+                        llama.generated_text = sharp + matched_candidates[0] + "CONT";
                         break;
                     }
                 }
