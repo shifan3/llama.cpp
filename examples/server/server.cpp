@@ -492,7 +492,6 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
 
     for (int i = 1; i < argc; i++) {
         arg = argv[i];
-        print(arg);
         if (arg == "--port") {
             if (++i >= argc) {
                 invalid_param = true;
@@ -525,6 +524,7 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
             }
             std::ifstream f(argv[i]);
             json data = json::parse(f); 
+            printf("a1\n");
             auto arr = data["candidates"].array();
             for (auto& line : arr) {
                 std::string s = line;
