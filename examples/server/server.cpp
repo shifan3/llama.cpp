@@ -795,7 +795,7 @@ int main(int argc, char ** argv) {
     server_params sparams;
 
     // struct that contains llama context and inference
-    static thread_local llama_server_context llama;
+    llama_server_context llama;
     extra_params eparams;
     server_params_parse(argc, argv, sparams, params, eparams);
     auto antiprompt = params.antiprompt;
@@ -831,12 +831,14 @@ int main(int argc, char ** argv) {
         res.set_content("<h1>llama.cpp server works</h1>", "text/html");
     });
 
-    svr.Post("/completion", [&llama, &eparams](const Request & req, Response & res) {
+    svr.Post("/completion", [&eparams, &params](const Request & req, Response & res) {
+        static thread_local llama_server_context llama;
         if (llama.ctx == nullptr) {
             if (!llama.loadModel(params)) {
                 res.status = 500;
-                return res.set_content("cannot load model", "application/text")
+                return res.set_content("cannot load model", "application/text");
             }
+            printf("load model in current thread\n");
         }
         llama.rewind();
         llama_reset_timings(llama.ctx);
@@ -955,7 +957,7 @@ int main(int argc, char ** argv) {
     svr.Options(R"(/.*)", [](const Request &, Response & res) {
         return res.set_content("", "application/json");
     });
-
+    /*
     svr.Post("/tokenize", [&llama](const Request & req, Response & res) {
         const json body = json::parse(req.body);
         const std::string content = body.value("content", "");
@@ -977,7 +979,7 @@ int main(int argc, char ** argv) {
 
         const json data = format_embedding_response(llama);
         return res.set_content(data.dump(), "application/json");
-    });
+    });*/
 
     svr.set_logger(log_server_request);
 
