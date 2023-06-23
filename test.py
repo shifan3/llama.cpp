@@ -9,4 +9,4 @@ resp = requests.post('http://localhost:8080/completion', data = json.dumps({
 t1 = time()
 print(json.dumps(json.loads(resp.text), indent = 4, ensure_ascii=False))
 
-print(time.time() - t1)
+print(time() - t1)
