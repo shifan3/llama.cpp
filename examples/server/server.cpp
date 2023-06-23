@@ -823,7 +823,7 @@ int main(int argc, char ** argv) {
         res.set_content("<h1>llama.cpp server works</h1>", "text/html");
     });
 
-    svr.Post("/completion", [&llama](const Request & req, Response & res) {
+    svr.Post("/completion", [&llama, &antiprompt](const Request & req, Response & res) {
         llama.rewind();
         llama_reset_timings(llama.ctx);
         llama.params.antiprompt = antiprompt;
