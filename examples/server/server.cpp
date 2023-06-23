@@ -850,11 +850,14 @@ int main(int argc, char ** argv) {
 
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
-                printf("token_text %s\n", token_text.c_str());
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
                     
-                printf("token_text %s\n", llama.generated_text.c_str());
+                printf("generated_text %s\n", llama.generated_text.c_str());
+                std::string generated_text = llama.generated_text;
+                if (!generated_text.empty()) {
+                    //if (generated_text[0] == '\n')
+                }
             }
 
             if (stop_pos == std::string::npos) {

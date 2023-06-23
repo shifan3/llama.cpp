@@ -3,7 +3,7 @@ import json
 from time import time
 t1 = time()
 resp = requests.post('http://localhost:8080/completion', data = json.dumps({
-    'prompt' : '根生长具有向 _ _生长、向 _ _生长和向 _ _生长的特性．\n知识点:',
+    'prompt' : '根生长具有向 _ _生长、向 _ _生长和向 _ _生长的特性．\n知识点:\n',
     'subject' : '生物',
     'n_predict' : 32,
     'stop' : ['END'],
