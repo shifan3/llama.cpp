@@ -817,7 +817,7 @@ int main(int argc, char ** argv) {
     }
 
     if (params.antiprompt.size() > 0) {
-        printf("bb1\n");
+        printf("bb2\n");
     }
 
     Server svr;
