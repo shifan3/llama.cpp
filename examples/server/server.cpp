@@ -11,7 +11,7 @@
 #include <fstream>
 #include "httplib.h"
 #include "json.hpp"
-
+#include <codecvt>
 #ifndef SERVER_VERBOSE
 #define SERVER_VERBOSE 1
 #endif
@@ -517,16 +517,16 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
                 break;
             }
             params.model = argv[i];
-        } else if (arg == "--completion-candidates") {
+        } else if (arg == "--candidates-file") {
             if (++i >= argc) {
                 invalid_param = true;
                 break;
             }
             std::ifstream f(argv[i]);
-            json data = json::parse(f); 
-            auto arr = data.array();
-            for (auto& candidate : arr) {
-                eparams.completion_candidates.push_back(candidate);
+            f.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<char>));
+            std::string line;
+            while (std::getline(f, line)) {
+                eparams.completion_candidates.push_back(line);
             }
             
         } else if (arg == "-a" || arg == "--alias") {
@@ -828,11 +828,16 @@ int main(int argc, char ** argv) {
         res.set_content("<h1>llama.cpp server works</h1>", "text/html");
     });
 
-    svr.Post("/completion", [&llama, &antiprompt](const Request & req, Response & res) {
+    svr.Post("/completion", [&llama, &eparams](const Request & req, Response & res) {
         llama.rewind();
         llama_reset_timings(llama.ctx);
-        llama.params.antiprompt = antiprompt;
-        parse_options_completion(json::parse(req.body), llama);
+        json input_body = json::parse(req.body);
+        std::string prompt = input_body["prompt"];
+        std::string subject = input_body["subject"];
+        printf("prompt %s\n", prompt.c_str());
+        printf("subject %s\n", subject.c_str());
+        input_body["prompt"] = subject + ":" + prompt;
+        parse_options_completion(input_body, llama);
 
         llama.loadPrompt();
         llama.beginCompletion();
@@ -845,6 +850,7 @@ int main(int argc, char ** argv) {
                 printf("token_text %s\n", token_text.c_str());
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
+                
             }
 
             if (stop_pos == std::string::npos) {
