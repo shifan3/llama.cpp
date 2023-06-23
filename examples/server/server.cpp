@@ -513,6 +513,12 @@ static void server_params_parse(int argc, char ** argv, server_params & sparams,
                 break;
             }
             params.model = argv[i];
+        } else if (arg == "--stop-word") {
+            if (++i >= argc) {
+                invalid_param = true;
+                break;
+            }
+            params.antiprompt.push_back(argv[i]);
         } else if (arg == "-a" || arg == "--alias") {
             if (++i >= argc) {
                 invalid_param = true;
@@ -826,7 +832,6 @@ int main(int argc, char ** argv) {
 
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
-                printf("token_text: %s\n", token_text.c_str());
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
             }
