@@ -812,8 +812,6 @@ int main(int argc, char ** argv) {
     if (!llama.loadModel(params)) {
         return 1;
     }
-    
-    params.antiprompt = antiprompt;
     Server svr;
 
     svr.set_default_headers({
@@ -828,7 +826,7 @@ int main(int argc, char ** argv) {
     svr.Post("/completion", [&llama](const Request & req, Response & res) {
         llama.rewind();
         llama_reset_timings(llama.ctx);
-
+        llama.params.antiprompt = antiprompt;
         parse_options_completion(json::parse(req.body), llama);
 
         llama.loadPrompt();
