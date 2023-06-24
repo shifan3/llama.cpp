@@ -1,7 +1,11 @@
 #include "common.h"
 #include "llama.h"
+#ifndef WIN32
 #include "build-info.h"
-
+#else
+#define BUILD_NUMBER 1
+#define BUILD_COMMIT 1
+#endif
 // single thread
 #define CPPHTTPLIB_THREAD_POOL_COUNT 1
 #ifndef NDEBUG
