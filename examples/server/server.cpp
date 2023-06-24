@@ -795,7 +795,7 @@ int main(int argc, char ** argv) {
     server_params sparams;
 
     // struct that contains llama context and inference
-    llama_server_context llama;
+    //llama_server_context llama;
     extra_params eparams;
     server_params_parse(argc, argv, sparams, params, eparams);
     auto antiprompt = params.antiprompt;
@@ -817,9 +817,9 @@ int main(int argc, char ** argv) {
     });
 
     // load the model
-    if (!llama.loadModel(params)) {
-        return 1;
-    }
+    //if (!llama.loadModel(params)) {
+    //    return 1;
+    //}
     Server svr;
 
     svr.set_default_headers({
