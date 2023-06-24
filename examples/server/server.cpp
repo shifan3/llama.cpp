@@ -1,6 +1,6 @@
 #include "common.h"
 #include "llama.h"
-#ifndef WIN32
+#ifndef VSCODE
 #include "build-info.h"
 #else
 #define BUILD_NUMBER 1
