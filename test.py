@@ -6,7 +6,7 @@ prompt = '一个自然数（0除外）， _ _的个数是有限的， _ _的个�
 partial_knowledge = ''
 n_predict = 32
 while True:
-    resp = requests.post('http://localhost:8080/completion', data = json.dumps({
+    resp = requests.post('http://localhost:8081/completion', data = json.dumps({
         'prompt' : f'{prompt}\n知识点:\n{partial_knowledge}',
         'subject' : '数学',
         'n_predict' : n_predict,

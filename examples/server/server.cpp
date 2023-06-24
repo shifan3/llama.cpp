@@ -21,7 +21,7 @@ using json = nlohmann::json;
 
 struct server_params {
     std::string hostname = "127.0.0.1";
-    int32_t port = 8080;
+    int32_t port = 8081;
     int32_t read_timeout = 600;
     int32_t write_timeout = 600;
 };

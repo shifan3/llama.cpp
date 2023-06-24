@@ -6,7 +6,7 @@ prompt = '如图1是某同学在测物体长度和液体体积时出现的情形
 partial_knowledge = ''
 n_predict = 32
 while True:
-    resp = requests.post('http://localhost:8080/completion', data = json.dumps({
+    resp = requests.post('http://localhost:8081/completion', data = json.dumps({
         'prompt' : f'{prompt}\n知识点:\n{partial_knowledge}',
         'subject' : '物理',
         'n_predict' : n_predict,
