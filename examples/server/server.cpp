@@ -821,7 +821,7 @@ int main(int argc, char ** argv) {
     //    return 1;
     //}
     Server svr;
-
+    svr.new_task_queue = [] { return new ThreadPool(4); };
     svr.set_default_headers({
         { "Access-Control-Allow-Origin", "*" },
         { "Access-Control-Allow-Headers", "content-type" }
