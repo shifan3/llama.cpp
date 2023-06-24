@@ -832,40 +832,31 @@ int main(int argc, char ** argv) {
     });
 
     svr.Post("/completion", [&eparams, &params, &llama](const Request & req, Response & res) {
-        if (llama.ctx == nullptr) {
-            if (!llama.loadModel(params)) {
-                res.status = 500;
-                return res.set_content("cannot load model", "application/text");
-            }
-            printf("load model in current thread\n");
-        }
-        llama.rewind();
-        llama_reset_timings(llama.ctx);
         json input_body = json::parse(req.body);
         std::string prompt = input_body["prompt"];
         std::string subject = input_body["subject"];
-        printf("prompt %s\n", prompt.c_str());
-        printf("subject %s\n", subject.c_str());
-        input_body["prompt"] = subject + ":" + prompt;
-        parse_options_completion(input_body, llama);
+        while (1) {
+            llama.rewind();
+            llama_reset_timings(llama.ctx);
+            
+            printf("prompt %s\n", prompt.c_str());
+            printf("subject %s\n", subject.c_str());
+            input_body["prompt"] = subject + ":" + prompt;
+            parse_options_completion(input_body, llama);
 
-        llama.loadPrompt();
-        llama.beginCompletion();
+            llama.loadPrompt();
+            llama.beginCompletion();
 
-        if (!llama.stream) {
             size_t stop_pos = std::string::npos;
-
+            bool try_again = false;
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
                     
                 printf("generated_text %s\n", llama.generated_text.c_str());
-                std::string generated_text = llama.generated_text, sharp = "";
-                if (!generated_text.empty() && generated_text[0] == '#') {
-                    sharp = "#";
-                    generated_text.erase(generated_text.begin());
-                }
+                std::string generated_text = llama.generated_text;
+                
                 if (!generated_text.empty() && !eparams.completion_candidates.empty()) {
                     std::vector<std::string> matched_candidates;
                     generated_text = subject + ">" + generated_text;
@@ -876,12 +867,20 @@ int main(int argc, char ** argv) {
                         }
                     }
                     if (matched_candidates.size() == 1) {
-                        llama.generated_text = sharp + matched_candidates[0] + "CONT";
+                        auto p = matched_candidates[0].find_first_of('>');
+                        if (p != std::string::npos) {
+                            matched_candidates[0] = matched_candidates[0].substr(p+1);
+                        }
+                        prompt += matched_candidates[0] + "#";
+                        try_again = true;
                         break;
                     }
                 }
             }
 
+            if (try_again) {
+                continue;
+            }
             if (stop_pos == std::string::npos) {
                 stop_pos = llama.findStoppingStrings(llama.generated_text, 0, STOP_PARTIAL);
             }
@@ -896,60 +895,7 @@ int main(int argc, char ** argv) {
 
             res.set_content(data.dump(-1, ' ', false, json::error_handler_t::replace),
                             "application/json");
-        } else {
-            const auto chunked_content_provider = [&](size_t, DataSink & sink) {
-                size_t sent_count = 0;
-
-                while (llama.has_next_token) {
-                    const std::string token_text = llama.doCompletion();
-                    if (llama.multibyte_pending > 0) {
-                        continue;
-                    }
-
-                    size_t pos = std::min(sent_count, llama.generated_text.size());
-
-                    const std::string str_test = llama.generated_text.substr(pos);
-                    size_t stop_pos =
-                        llama.findStoppingStrings(str_test, token_text.size(), STOP_FULL);
-                    if (stop_pos != std::string::npos) {
-                        llama.generated_text.erase(
-                            llama.generated_text.begin() + pos + stop_pos,
-                            llama.generated_text.end());
-                        pos = std::min(sent_count, llama.generated_text.size());
-                    } else {
-                        stop_pos = llama.findStoppingStrings(str_test, token_text.size(),
-                            STOP_PARTIAL);
-                    }
-
-                    const std::string to_send = llama.generated_text.substr(pos, stop_pos);
-                    sent_count += to_send.size();
-
-                    const json data = llama.has_next_token
-                                          ? format_partial_response(to_send)
-                                          // Generation is done, send extra information.
-                                          : format_final_response(llama, to_send);
-
-                    const std::string str =
-                        "data: " +
-                        data.dump(-1, ' ', false, json::error_handler_t::replace) +
-                        "\n\n";
-
-                    LOG_VERBOSE("data stream", {
-                        { "to_send", str }
-                    });
-
-                    if (!sink.write(str.data(), str.size())) {
-                        LOG_VERBOSE("stream closed", {});
-                        llama_print_timings(llama.ctx);
-                        return false;
-                    }
-                }
-
-                llama_print_timings(llama.ctx);
-                sink.done();
-                return true;
-            };
-            res.set_chunked_content_provider("text/event-stream", chunked_content_provider);
+            break;
         }
     });
 
