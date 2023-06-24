@@ -795,7 +795,7 @@ int main(int argc, char ** argv) {
     server_params sparams;
 
     // struct that contains llama context and inference
-    //llama_server_context llama;
+    llama_server_context llama;
     extra_params eparams;
     server_params_parse(argc, argv, sparams, params, eparams);
     auto antiprompt = params.antiprompt;
@@ -817,9 +817,9 @@ int main(int argc, char ** argv) {
     });
 
     // load the model
-    //if (!llama.loadModel(params)) {
-    //    return 1;
-    //}
+    if (!llama.loadModel(params)) {
+        return 1;
+    }
     Server svr;
     //svr.new_task_queue = [] { return new ThreadPool(4); };
     svr.set_default_headers({
@@ -831,8 +831,7 @@ int main(int argc, char ** argv) {
         res.set_content("<h1>llama.cpp server works</h1>", "text/html");
     });
 
-    svr.Post("/completion", [&eparams, &params](const Request & req, Response & res) {
-        static thread_local llama_server_context llama;
+    svr.Post("/completion", [&eparams, &params, &llama](const Request & req, Response & res) {
         if (llama.ctx == nullptr) {
             if (!llama.loadModel(params)) {
                 res.status = 500;
