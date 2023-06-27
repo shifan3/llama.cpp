@@ -840,6 +840,7 @@ int main(int argc, char ** argv) {
         std::string prompt = input_body["prompt"];
         std::string subject = input_body["subject"];
         int n_predict = input_body["n_predict"];
+        std::string real_result;
         while (1) {
             llama.rewind();
             llama_reset_timings(llama.ctx);
@@ -851,7 +852,7 @@ int main(int argc, char ** argv) {
 
             llama.loadPrompt();
             llama.beginCompletion();
-            std::string real_result;
+            
             size_t stop_pos = std::string::npos;
             bool try_again = false;
             int n_tokens = 0;
@@ -886,6 +887,7 @@ int main(int argc, char ** argv) {
                             try_again = true;
                         }
                         input_body["n_predict"] = n_predict;
+                        printf("n_predict %d", n_predict);
                         break;
                     }/*
                     else if (matched_candidates.size() > 1) {
