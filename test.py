@@ -15,6 +15,7 @@ prompts = [
 ]
 partial_knowledge = ''
 n_predict = 32
+t_total = 0
 for prompt in prompts:
     print(prompt)
     t1 = time()
@@ -31,3 +32,5 @@ for prompt in prompts:
     content:str = resp['content']
     print(content)
     print(time() - t1)
+    t_total += time() - t1
+print(f'total {t_total}, avg {t_total/len(prompts)}')
