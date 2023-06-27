@@ -848,6 +848,7 @@ int main(int argc, char ** argv) {
             printf("prompt %s\n", prompt.c_str());
             printf("subject %s\n", subject.c_str());
             input_body["prompt"] = subject + ":" + prompt;
+            printf("new prompt %s", prompt.c_str());
             parse_options_completion(input_body, llama);
 
             llama.loadPrompt();
