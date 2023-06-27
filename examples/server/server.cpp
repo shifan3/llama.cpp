@@ -839,6 +839,7 @@ int main(int argc, char ** argv) {
         json input_body = json::parse(req.body);
         std::string prompt = input_body["prompt"];
         std::string subject = input_body["subject"];
+        int n_predict = input_body["n_predict"];
         while (1) {
             llama.rewind();
             llama_reset_timings(llama.ctx);
@@ -853,8 +854,10 @@ int main(int argc, char ** argv) {
 
             size_t stop_pos = std::string::npos;
             bool try_again = false;
+            int n_tokens = 0;
             while (llama.has_next_token) {
                 const std::string token_text = llama.doCompletion();
+                n_tokens ++;
                 stop_pos = llama.findStoppingStrings(llama.generated_text,
                     token_text.size(), STOP_FULL);
                     
@@ -876,7 +879,12 @@ int main(int argc, char ** argv) {
                             matched_candidates[0] = matched_candidates[0].substr(p+1);
                         }
                         prompt += matched_candidates[0] + "#";
-                        try_again = true;
+                        
+                        n_predict -= n_tokens;
+                        if (n_predict > 0) {
+                            try_again = true;
+                        }
+                        input_body["n_predict"] = n_predict;
                         break;
                     }/*
                     else if (matched_candidates.size() > 1) {

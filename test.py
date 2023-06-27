@@ -14,7 +14,7 @@ prompts = [
     '英语:There _____ a ticket, a lamp and some keys on the table.  a. are b. is c. have d. has'
 ]
 partial_knowledge = ''
-n_predict = 32
+n_predict = 64
 t_total = 0
 for prompt in prompts:
     print(prompt)
