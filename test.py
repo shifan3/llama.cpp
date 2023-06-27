@@ -26,7 +26,7 @@ for prompt in prompts:
         'prompt' : f'{prompt}\n知识点:\n{partial_knowledge}',
         'subject' : subject,
         'n_predict' : n_predict,
-        'stop' : ['$'],
+        'stop' : ['END'],
     }, ensure_ascii=False).encode('utf-8'))
     resp = json.loads(resp.text)
     content:str = resp['content']
