@@ -881,8 +881,8 @@ int main(int argc, char ** argv) {
                             printf("matched candidates %s\n", matched_candidates[0].c_str());
                             matched_candidates[0] = matched_candidates[0].substr(p+1);
                         }
-                        prompt += matched_candidates[0] + "#";
-                        real_result += matched_candidates[0] + "#";
+                        prompt += matched_candidates[0];
+                        real_result += matched_candidates[0];
                         n_predict -= n_tokens;
                         if (n_predict > 0) {
                             try_again = true;
