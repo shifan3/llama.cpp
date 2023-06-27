@@ -30,7 +30,8 @@ for prompt in prompts:
     }, ensure_ascii=False).encode('utf-8'))
     resp = json.loads(resp.text)
     content:str = resp['content']
+    t2 = time()
     print(content)
-    print(time() - t1)
-    t_total += time() - t1
+    print(t2 - t1)
+    t_total += t2 - t1
 print(f'total {t_total}, avg {t_total/len(prompts)}')

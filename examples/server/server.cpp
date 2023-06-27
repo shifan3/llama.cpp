@@ -851,7 +851,7 @@ int main(int argc, char ** argv) {
 
             llama.loadPrompt();
             llama.beginCompletion();
-
+            std::string real_result;
             size_t stop_pos = std::string::npos;
             bool try_again = false;
             int n_tokens = 0;
@@ -880,7 +880,7 @@ int main(int argc, char ** argv) {
                             matched_candidates[0] = matched_candidates[0].substr(p+1);
                         }
                         prompt += matched_candidates[0] + "#";
-                        
+                        real_result += matched_candidates[0] + "#";
                         n_predict -= n_tokens;
                         if (n_predict > 0) {
                             try_again = true;
@@ -911,7 +911,7 @@ int main(int argc, char ** argv) {
                 //    llama.generated_text.end());
             }
 
-            const json data = format_final_response(llama, llama.generated_text);
+            const json data = format_final_response(llama, real_result + llama.generated_text);
 
             llama_print_timings(llama.ctx);
 
