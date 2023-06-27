@@ -869,13 +869,14 @@ int main(int argc, char ** argv) {
                     generated_text = subject + ">" + generated_text;
                     for (const auto& candidate : eparams.completion_candidates) {
                         if (candidate.size() >= generated_text.size() && candidate.substr(0, generated_text.size()) == generated_text) {
-                            printf("matched candidates %s\n", candidate.c_str());
+                            
                             matched_candidates.push_back(candidate);
                         }
                     }
                     if (matched_candidates.size() == 1) {
                         auto p = matched_candidates[0].find_first_of('>');
                         if (p != std::string::npos) {
+                            printf("matched candidates %s\n", matched_candidates[0].c_str());
                             matched_candidates[0] = matched_candidates[0].substr(p+1);
                         }
                         prompt += matched_candidates[0] + "#";
