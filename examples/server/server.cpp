@@ -878,7 +878,16 @@ int main(int argc, char ** argv) {
                         prompt += matched_candidates[0] + "#";
                         try_again = true;
                         break;
-                    }
+                    }/*
+                    else if (matched_candidates.size() > 1) {
+                        //https://stackoverflow.com/questions/2852895/c-iterate-or-split-utf-8-string-into-array-of-symbols
+                        for (size_t i = generated_text.size(); true; ++i) {
+                            std::map<wchar_t, int> counter;
+                            for (const auto& candidate : matched_candidates) {
+                                if (candidate
+                            }
+                        }
+                    }*/
                 }
             }
 
